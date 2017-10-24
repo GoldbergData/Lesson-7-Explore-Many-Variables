@@ -42,8 +42,9 @@ ggplot(aes(x = age, y = friend_count, color = gender),
 ```
 
 ```{r Third Qualitative Variable with Dplyr}
+# Chain functions to create friend count descriptive stats by groups
 pf.fc_by_age_gender <- pf %>%
-  subset(!is.na(gender)) %>%
+  filter(!is.na(gender)) %>%
   group_by(age, gender) %>%
   summarise(mean_friend_count = mean(friend_count),
             median_friend_count = median(friend_count),
@@ -57,10 +58,26 @@ pf.fc_by_age_gender <- pf %>%
 Notes:
 
 ```{r Plotting Conditional Summaries}
+ggplot(aes(x = age, y = median_friend_count, color = gender), 
+       data = pf.fc_by_age_gender) +
+  geom_line()
 
 ```
 
 ***
+
+```{r Reshaping Data}
+library(reshape2)
+pf.fc_by_age_gender.wide <- dcast(pf.fc_by_age_gender,
+                                   age ~ gender,
+                                   value.var = 'median_friend_count')
+
+# Try out melt
+pf.fc_by_age_gender.long <- melt(pf.fc_by_age_gender.wide,
+                                 measure.vars = c('male', 'female'))
+
+```
+
 
 ### Thinking in Ratios
 Notes:
