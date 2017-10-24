@@ -9,6 +9,7 @@ knitr::opts_chunk$set(fig.width=12, fig.height=8, fig.path='Figs/',
 ```{r Load Libraries}
 library(readr)
 library(ggplot2)
+library(dplyr)
 
 ```
 
@@ -37,6 +38,16 @@ ggplot(aes(x = age, y = friend_count, color = gender),
        data = subset(pf, !is.na(gender))) +
   geom_line(aes(color = gender), stat = 'summary', fun.y = median)
   
+
+```
+
+```{r Third Qualitative Variable with Dplyr}
+pf.fc_by_age_gender <- pf %>%
+  subset(!is.na(gender)) %>%
+  group_by(age, gender) %>%
+  summarise(mean_friend_count = mean(friend_count),
+            median_friend_count = median(friend_count),
+            n = n())
 
 ```
 
