@@ -223,7 +223,6 @@ ggplot(aes(x = age, y = friend_count),
   geom_line(aes(color = factor(year_joined.bucket)), stat = 'summary', fun.y = median)
 
 
-
 ```
 
 ***
@@ -261,6 +260,13 @@ Notes:
 
 ```{r Friending Rate}
 
+pf.fc_by_rate <- pf %>%
+  subset(tenure > 0 )
+pf.fc_by_rate$friend_rate <- pf.fc_by_rate$friend_count / pf.fc_by_rate$tenure
+summary(pf.fc_by_rate$friend_rate)
+
+# answer
+with(subset(pf, tenure >= 1), summary(friend_count / tenure))
 
 ```
 
@@ -269,11 +275,22 @@ Notes:
 ### Friendships Initiated
 Notes:
 
-What is the median friend rate?
+What is the median friend rate? 0.2205
 
-What is the maximum friend rate?
+What is the maximum friend rate? 417.0000
 
 ```{r Friendships Initiated}
+# Create a line graph of mean of friendships_initiated per day (of tenure)
+# vs. tenure colored by year_joined.bucket.
+
+# You need to make use of the variables tenure,
+# friendships_initiated, and year_joined.bucket.
+
+# You also need to subset the data to only consider user with at least
+# one day of tenure.
+
+ggplot(aes(x = age, y = friend_initiated),
+       data = subset(pf, pf$tenure >))
 
 ```
 
