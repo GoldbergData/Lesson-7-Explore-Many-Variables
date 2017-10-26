@@ -12,6 +12,7 @@ library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(reshape2)
+library(data.table)
 
 ```
 
@@ -289,8 +290,11 @@ What is the maximum friend rate? 417.0000
 # You also need to subset the data to only consider user with at least
 # one day of tenure.
 
-ggplot(aes(x = age, y = friend_initiated),
-       data = subset(pf, pf$tenure >))
+ggplot(aes(x = tenure, y = friendships_initiated / tenure),
+       data = subset(pf, pf$tenure >= 1)) +
+  geom_line(aes(color = year_joined.bucket), 
+            stat = 'summary', fun.y = mean)
+  
 
 ```
 
@@ -325,12 +329,16 @@ ggplot(aes(x = 90 * round(tenure / 90), y = friendships_initiated / tenure),
             stat = "summary",
             fun.y = mean)
 
+ggplot(aes(x = tenure, y = friendships_initiated / tenure),
+       data = subset(pf, tenure > 0)) +
+  geom_smooth(aes(color = year_joined.bucket))
+
 ```
 
 ***
 
 ### Sean's NFL Fan Sentiment Study
-Notes:
+Notes: It took averaging to get the story to come out for fan sentiment related to NFL team wins and losses. If data is too noisy, average until you see a reasonable story or a story you'd expect. As he added more data, he had lower variance but more biased data. 
 
 ***
 
@@ -340,18 +348,51 @@ Notes:
 ***
 
 ### Histograms Revisited
-Notes:
+Notes: If the binwidth is increased, the discreteness of the data disappears, creating a biased model. You can average too much, which would lead to biasness depending on the underlying characteristics of the data set.
 
 ```{r Histograms Revisited}
+yo <- fread('yogurt.csv')
+dim(yo)
+str(yo)
+glimpse(yo)
+head(yo)
+tail(yo)
+summary(yo)
 
+yo$id <- factor(yo$id)
+str(yo$id)
+
+ggplot(aes(x = price), data = yo) +
+  geom_histogram(binwidth = 1, 
+                 fill = I('#F79420'), 
+                 color = 'black')
 ```
 
 ***
 
 ### Number of Purchases
-Notes:
+Notes: Signs of discreetness: 75th percentile is near the maximum; check how many unique prices there are per price point with table.
 
 ```{r Number of Purchases}
+# Create a new variable called all.purchases,
+# which gives the total counts of yogurt for
+# each observation or household.
+
+# One way to do this is using the transform
+# function. You can look up the function transform
+# and run the examples of code at the bottom of the
+# documentation to figure out what it does.
+
+# The transform function produces a data frame
+# so if you use it then save the result to 'yo'!
+
+# OR you can figure out another way to create the
+# variable.
+
+yo <- transform(yo, all.purchases = strawberry + blueberry + pina.colada
+                + plain + mixed.berry)
+
+summary(yo$all.purchases)
 
 ```
 
@@ -361,7 +402,13 @@ Notes:
 Notes:
 
 ```{r Prices over Time}
+# Create a scatterplot of price vs time.
+# This will be an example of a time series plot.
 
+ggplot(aes(x = time, y = price),
+       data = yo) +
+  geom_jitter(alpha = 1/4, shape = 21, fill = I('#F79420'))
+  
 ```
 
 ***
